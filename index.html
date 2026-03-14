@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gibi Digital - Mesa de Design 4 Páginas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Bangers&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --pop-pink: #ff477e;
+            --pop-cyan: #00dbde;
+            --pop-yellow: #fee440;
+            --pop-purple: #9b5de5;
+            --bg-canvas: #f0f2f5;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0; padding: 0;
+            background-color: var(--pop-purple);
+            background-image: linear-gradient(#d1d1d1 1px, transparent 1px), 
+                              linear-gradient(90deg, #d1d1d1 1px, transparent 1px);
+            background-size: 50px 50px;
+            font-family: 'Open Sans', sans-serif;
+            display: flex; flex-direction: column; align-items: center;
+            min-height: 100vh; overflow-x: hidden;
+        }
+
+        .decor { position: absolute; border: 4px solid #000; z-index: -1; filter: drop-shadow(4px 4px 0px #000); }
+        .blob-1 { width: 150px; height: 150px; background: var(--pop-cyan); border-radius: 30% 70% 70% 30%; top: 10%; left: -50px; animation: float 7s infinite ease-in-out; }
+        .blob-2 { width: 100px; height: 100px; background: var(--pop-pink); border-radius: 50%; bottom: 10%; right: -30px; animation: float 5s infinite ease-in-out reverse; }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(10deg); }
+        }
+
+        .sticker-title {
+            margin: 40px 0;
+            font-family: 'Permanent Marker', cursive;
+            font-size: clamp(1.5rem, 5vw, 2.5rem);
+            background: #fff; border: 5px solid #000;
+            padding: 10px 25px; transform: rotate(-1deg);
+            box-shadow: 10px 10px 0px var(--pop-pink);
+            z-index: 10;
+        }
+
+        .comic-stage {
+            width: 90%; max-width: 750px;
+            aspect-ratio: 800 / 1160;
+            position: relative;
+            margin-bottom: 120px;
+            perspective: 2500px;
+        }
+
+        .paper-stack {
+            width: 100%; height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+        }
+
+        .leaf {
+            width: 100%; height: 100%;
+            position: absolute;
+            top: 0; left: 0;
+            background: #fff;
+            border: 6px solid #000;
+            backface-visibility: hidden;
+            transform-origin: left center;
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+            box-shadow: 5px 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .leaf img {
+            width: 100%; height: 100%;
+            object-fit: fill;
+            display: block;
+        }
+
+        .flipped { transform: rotateY(-180deg); }
+
+        .controls { position: fixed; bottom: 30px; display: flex; gap: 20px; z-index: 100; }
+        .btn-cartoon {
+            font-family: 'Bangers', cursive; font-size: 1.4rem;
+            padding: 12px 30px; cursor: pointer;
+            border: 4px solid #000; background: #fff;
+            box-shadow: 6px 6px 0px #000; transition: 0.1s;
+            letter-spacing: 1px;
+        }
+        .btn-cartoon:active { transform: translate(4px, 4px); box-shadow: 0px 0px 0px #000; }
+        .btn-next { background: var(--pop-yellow); }
+        .btn-prev { background: var(--pop-cyan); color: #fff; }
+
+        .page-counter {
+            position: absolute; top: -30px; right: 0;
+            font-family: 'Bangers', cursive; color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="decor blob-1"></div>
+    <div class="decor blob-2"></div>
+
+    <div class="sticker-title">IA E SEGURANÇA</div>
+
+    <div class="comic-stage">
+        <div class="page-counter" id="counter">Página 1 / 4</div>
+        <div class="paper-stack">
+            
+            <div class="leaf" id="p4" style="z-index: 1;">
+                <img src="final-gibi.png" alt="Considerações Finais">
+            </div>
+
+            <div class="leaf" id="p3" style="z-index: 2;">
+                <img src="page1-gibi.png" alt="Privacidade na Era da IA">
+            </div>
+
+            <div class="leaf" id="p2" style="z-index: 3;">
+                <img src="intro-gibi.png" alt="O que é IA">
+            </div>
+
+            <div class="leaf" id="p1" style="z-index: 4;">
+                <img src="capa-gibi.png" alt="Bem-vindos">
+            </div>
+
+        </div>
+    </div>
+
+    <div class="controls">
+        <button class="btn-cartoon btn-prev" onclick="voltar()">VOLTAR</button>
+        <button class="btn-cartoon btn-next" onclick="avancar()">PRÓXIMO</button>
+    </div>
+
+    <script>
+        let currentPage = 1;
+        const totalPages = 4;
+
+        function updateCounter() {
+            document.getElementById('counter').innerText = `Página ${currentPage} / ${totalPages}`;
+        }
+
+        function avancar() {
+            if (currentPage < totalPages) {
+                const leaf = document.getElementById(`p${currentPage}`);
+                leaf.classList.add('flipped');
+                setTimeout(() => { leaf.style.zIndex = 0; }, 400);
+                currentPage++;
+                updateCounter();
+            }
+        }
+
+        function voltar() {
+            if (currentPage > 1) {
+                currentPage--;
+                const leaf = document.getElementById(`p${currentPage}`);
+                leaf.style.zIndex = (totalPages - currentPage + 5); 
+                leaf.classList.remove('flipped');
+                updateCounter();
+            }
+        }
+    </script>
+</body>
+</html>
