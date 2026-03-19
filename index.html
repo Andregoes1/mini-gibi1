@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gibi Digital - Mesa de Design 4 Páginas</title>
+    <title>Mesa de Design - Gibi & Vídeo</title>
     <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Bangers&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -11,143 +11,198 @@
             --pop-cyan: #00dbde;
             --pop-yellow: #fee440;
             --pop-purple: #9b5de5;
-            --bg-canvas: #f0f2f5;
+            --outline: #000;
         }
 
         * { box-sizing: border-box; }
 
         body {
             margin: 0; padding: 0;
-            background-color: var(--pop-purple);
-            background-image: linear-gradient(#d1d1d1 1px, transparent 1px), 
-                              linear-gradient(90deg, #d1d1d1 1px, transparent 1px);
-            background-size: 50px 50px;
             font-family: 'Open Sans', sans-serif;
             display: flex; flex-direction: column; align-items: center;
             min-height: 100vh; overflow-x: hidden;
+            /* --- ESPAÇO PARA SUA IMAGEM DE FUNDO --- */
+            background-image: url('background-mini-gibi.jpg.jpeg'); 
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-color: #f0f2f5; /* Cor de backup */
         }
 
-        .decor { position: absolute; border: 4px solid #000; z-index: -1; filter: drop-shadow(4px 4px 0px #000); }
-        .blob-1 { width: 150px; height: 150px; background: var(--pop-cyan); border-radius: 30% 70% 70% 30%; top: 10%; left: -50px; animation: float 7s infinite ease-in-out; }
-        .blob-2 { width: 100px; height: 100px; background: var(--pop-pink); border-radius: 50%; bottom: 10%; right: -30px; animation: float 5s infinite ease-in-out reverse; }
-        
-        @keyframes float {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-20px) rotate(10deg); }
+        /* Overlay de Grid para Estilo Mesa de Desenho */
+        .grid-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px), 
+                              linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px);
+            background-size: 30px 30px; z-index: -1; pointer-events: none;
         }
 
         .sticker-title {
-            margin: 40px 0;
+            margin: 30px 0;
             font-family: 'Permanent Marker', cursive;
-            font-size: clamp(1.5rem, 5vw, 2.5rem);
-            background: #fff; border: 5px solid #000;
-            padding: 10px 25px; transform: rotate(-1deg);
-            box-shadow: 10px 10px 0px var(--pop-pink);
+            font-size: clamp(1.2rem, 4vw, 2rem);
+            background: #fff; border: 4px solid var(--outline);
+            padding: 8px 20px; transform: rotate(-1deg);
+            box-shadow: 8px 8px 0px var(--pop-purple);
             z-index: 10;
         }
 
+        /* --- PALCO DO GIBI --- */
         .comic-stage {
-            width: 90%; max-width: 750px;
+            width: 90%; max-width: 600px;
             aspect-ratio: 800 / 1160;
             position: relative;
-            margin-bottom: 120px;
-            perspective: 2500px;
-        }
-
-        .paper-stack {
-            width: 100%; height: 100%;
-            position: relative;
-            transform-style: preserve-3d;
+            perspective: 2000px;
+            margin-bottom: 150px;
         }
 
         .leaf {
             width: 100%; height: 100%;
-            position: absolute;
-            top: 0; left: 0;
-            background: #fff;
-            border: 6px solid #000;
+            position: absolute; top: 0; left: 0;
+            background: #fff; border: 5px solid var(--outline);
             backface-visibility: hidden;
             transform-origin: left center;
-            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.1);
-            box-shadow: 5px 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+            box-shadow: 8px 8px 15px rgba(0,0,0,0.2);
         }
 
-        .leaf img {
-            width: 100%; height: 100%;
-            object-fit: fill;
-            display: block;
-        }
-
+        .leaf img { width: 100%; height: 100%; object-fit: cover; display: block; }
         .flipped { transform: rotateY(-180deg); }
 
-        .controls { position: fixed; bottom: 30px; display: flex; gap: 20px; z-index: 100; }
-        .btn-cartoon {
-            font-family: 'Bangers', cursive; font-size: 1.4rem;
-            padding: 12px 30px; cursor: pointer;
-            border: 4px solid #000; background: #fff;
-            box-shadow: 6px 6px 0px #000; transition: 0.1s;
-            letter-spacing: 1px;
+        /* --- BOTÃO ASSISTIR VÍDEO (ESTILO CARTOON) --- */
+        .video-trigger {
+            margin-top: 20px;
+            font-family: 'Bangers', cursive;
+            background: var(--pop-pink);
+            color: #fff;
+            padding: 10px 20px;
+            border: 4px solid #000;
+            cursor: pointer;
+            box-shadow: 5px 5px 0px #000;
+            transition: 0.2s;
+            font-size: 1.2rem;
         }
-        .btn-cartoon:active { transform: translate(4px, 4px); box-shadow: 0px 0px 0px #000; }
+
+        .video-trigger:hover { transform: scale(1.1) rotate(2deg); background: #ff1f60; }
+
+        /* --- TELA DE VÍDEO OCULTA (MODAL) --- */
+        .video-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            display: none; /* Oculto por padrão */
+            justify-content: center; align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .video-container {
+            width: 90%; max-width: 500px; /* Mantém proporção 9:16 aproximada */
+            aspect-ratio: 9 / 16;
+            background: #000;
+            border: 6px solid var(--pop-cyan);
+            box-shadow: 0 0 30px var(--pop-cyan);
+            position: relative;
+            transform: scale(0); /* Começa pequeno para a animação */
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .video-container.active { transform: scale(1); }
+
+        .video-container video { width: 100%; height: 100%; object-fit: cover; }
+
+        .close-video {
+            position: absolute; top: -50px; right: -10px;
+            background: var(--pop-yellow); border: 3px solid #000;
+            font-family: 'Bangers', cursive; padding: 5px 15px;
+            cursor: pointer; font-size: 1.2rem;
+        }
+
+        /* --- CONTROLES INFERIORES --- */
+        .controls { position: fixed; bottom: 20px; display: flex; gap: 15px; z-index: 100; }
+        
+        .btn-cartoon {
+            font-family: 'Bangers', cursive; font-size: 1.2rem;
+            padding: 10px 25px; cursor: pointer;
+            border: 4px solid var(--outline); background: #fff;
+            box-shadow: 5px 5px 0px var(--outline);
+            transition: 0.1s;
+        }
+
+        .btn-cartoon:active { transform: translate(3px, 3px); box-shadow: 0px 0px 0px #000; }
         .btn-next { background: var(--pop-yellow); }
         .btn-prev { background: var(--pop-cyan); color: #fff; }
 
-        .page-counter {
-            position: absolute; top: -30px; right: 0;
-            font-family: 'Bangers', cursive; color: #ffffff;
+        .btn-audio {
+            background: #fff; border-radius: 50%; width: 50px; height: 50px;
+            display: flex; align-items: center; justify-content: center;
+            border: 4px solid var(--outline); cursor: pointer;
+            box-shadow: 4px 4px 0px var(--outline); font-size: 1.5rem;
         }
     </style>
 </head>
 <body>
 
-    <div class="decor blob-1"></div>
-    <div class="decor blob-2"></div>
+    <audio id="bgMusic" loop>
+        <source src="seu_audio.mp3" type="audio/mpeg">
+    </audio>
 
-    <div class="sticker-title">IA E SEGURANÇA</div>
+    <div class="grid-overlay"></div>
+
+    <div class="sticker-title">IA e Segurança Digital</div>
+
+    <button class="video-trigger" onclick="abrirVideo()">📺 CASO QUEIRA ASSISTIR AO VÍDEO</button>
 
     <div class="comic-stage">
-        <div class="page-counter" id="counter">Página 1 / 4</div>
         <div class="paper-stack">
-            
-            <div class="leaf" id="p4" style="z-index: 1;">
-                <img src="final-gibi.png" alt="Considerações Finais">
-            </div>
+            <div class="leaf" id="p4" style="z-index: 1;"><img src="final-page-gibi.png"></div>
+            <div class="leaf" id="p3" style="z-index: 2;"><img src="page1-minigibi.jpeg"></div>
+            <div class="leaf" id="p2" style="z-index: 3;"><img src="intro-mini-gibi.png"></div>
+            <div class="leaf" id="p1" style="z-index: 4;"><img src="capa-mini-gibi.jpeg"></div>
+        </div>
+    </div>
 
-            <div class="leaf" id="p3" style="z-index: 2;">
-                <img src="page1-gibi.png" alt="Privacidade na Era da IA">
-            </div>
-
-            <div class="leaf" id="p2" style="z-index: 3;">
-                <img src="intro-gibi.png" alt="O que é IA">
-            </div>
-
-            <div class="leaf" id="p1" style="z-index: 4;">
-                <img src="capa-gibi.png" alt="Bem-vindos">
-            </div>
-
+    <div class="video-overlay" id="videoOverlay">
+        <div class="video-container" id="videoContainer">
+            <button class="close-video" onclick="fecharVideo()">FECHAR [X]</button>
+            <video id="meuVideo" controls>
+                <source src="Projeto.mp4" type="video/mp4">
+            </video>
         </div>
     </div>
 
     <div class="controls">
         <button class="btn-cartoon btn-prev" onclick="voltar()">VOLTAR</button>
+        <button class="btn-audio" onclick="toggleMusic()" id="musicBtn">🔇</button>
         <button class="btn-cartoon btn-next" onclick="avancar()">PRÓXIMO</button>
     </div>
 
     <script>
         let currentPage = 1;
         const totalPages = 4;
+        const music = document.getElementById('bgMusic');
+        const musicBtn = document.getElementById('musicBtn');
+        const videoOverlay = document.getElementById('videoOverlay');
+        const videoContainer = document.getElementById('videoContainer');
+        const videoPlayer = document.getElementById('meuVideo');
 
-        function updateCounter() {
-            document.getElementById('counter').innerText = `Página ${currentPage} / ${totalPages}`;
+        // --- CONTROLE DE MÚSICA ---
+        function toggleMusic() {
+            if (music.paused) {
+                music.play();
+                musicBtn.innerText = "🔊";
+            } else {
+                music.pause();
+                musicBtn.innerText = "🔇";
+            }
         }
 
+        // --- CONTROLE DO GIBI ---
         function avancar() {
             if (currentPage < totalPages) {
                 const leaf = document.getElementById(`p${currentPage}`);
                 leaf.classList.add('flipped');
                 setTimeout(() => { leaf.style.zIndex = 0; }, 400);
                 currentPage++;
-                updateCounter();
             }
         }
 
@@ -155,10 +210,27 @@
             if (currentPage > 1) {
                 currentPage--;
                 const leaf = document.getElementById(`p${currentPage}`);
-                leaf.style.zIndex = (totalPages - currentPage + 5); 
+                leaf.style.zIndex = (totalPages - currentPage + 10);
                 leaf.classList.remove('flipped');
-                updateCounter();
             }
+        }
+
+        // --- CONTROLE DO VÍDEO POP-UP ---
+        function abrirVideo() {
+            videoOverlay.style.display = 'flex';
+            setTimeout(() => {
+                videoContainer.classList.add('active');
+            }, 10);
+            // Pausa a música de fundo ao abrir o vídeo (opcional)
+            if (!music.paused) music.pause();
+        }
+
+        function fecharVideo() {
+            videoContainer.classList.remove('active');
+            videoPlayer.pause(); // Para o vídeo ao fechar
+            setTimeout(() => {
+                videoOverlay.style.display = 'none';
+            }, 500);
         }
     </script>
 </body>
