@@ -2,206 +2,204 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mesa de Design - Gibi & Vídeo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Privacidade & IA</title>
     <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Bangers&display=swap" rel="stylesheet">
     <style>
         :root {
+            --neon-blue: #00f2ff;
+            --neon-purple: #bc13fe;
             --pop-pink: #ff477e;
-            --pop-cyan: #00dbde;
             --pop-yellow: #fee440;
-            --pop-purple: #9b5de5;
-            --outline: #000;
+            --outline: #0b0e14;
         }
 
-        * { box-sizing: border-box; }
+        .bg-fixed {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: url('parede-gibi.png') no-repeat center center;
+            background-size: cover; z-index: -10; transform: translateZ(0);
+        }
+
+        .grid-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: linear-gradient(rgba(0, 242, 255, 0.05) 1px, transparent 1px), 
+                              linear-gradient(90deg, rgba(0, 242, 255, 0.05) 1px, transparent 1px);
+            background-size: 40px 40px; z-index: -5; pointer-events: none;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
             margin: 0; padding: 0;
             font-family: 'Open Sans', sans-serif;
             display: flex; flex-direction: column; align-items: center;
-            min-height: 100vh; overflow-x: hidden;
-            /* --- ESPAÇO PARA SUA IMAGEM DE FUNDO --- */
-            background-image: url('background-mini-gibi.jpg.jpeg'); 
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            background-color: #f0f2f5; /* Cor de backup */
+            background-color: #05070a;
+            min-height: 110vh; overflow-x: hidden;
+            opacity: 0; 
+            transition: opacity 1s ease-in;
         }
 
-        /* Overlay de Grid para Estilo Mesa de Desenho */
-        .grid-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px), 
-                              linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px);
-            background-size: 30px 30px; z-index: -1; pointer-events: none;
+        body.loaded { opacity: 1; }
+
+        .video-badge {
+            position: fixed; top: 20px; right: 20px; z-index: 1000;
+            animation: slideInRight 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .btn-video {
+            width: 55px; height: 55px; border-radius: 50%;
+            border: 3px solid var(--outline); background: var(--pop-pink);
+            color: #fff; cursor: pointer; font-size: 1.4rem;
+            box-shadow: 0 0 15px rgba(255, 71, 126, 0.5), 4px 4px 0px var(--outline);
+            display: flex; align-items: center; justify-content: center; transition: 0.3s;
+        }
+        .btn-video:hover { transform: scale(1.1) rotate(15deg); box-shadow: 0 0 25px var(--pop-pink); }
+
+        header {
+            margin-top: 40px; text-align: center;
+            animation: bounceIn 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         .sticker-title {
-            margin: 30px 0;
             font-family: 'Permanent Marker', cursive;
-            font-size: clamp(1.2rem, 4vw, 2rem);
-            background: #fff; border: 4px solid var(--outline);
-            padding: 8px 20px; transform: rotate(-1deg);
-            box-shadow: 8px 8px 0px var(--pop-purple);
-            z-index: 10;
+            background: #fff; color: var(--outline);
+            border: 4px solid var(--outline); padding: 10px 30px;
+            font-size: clamp(1.2rem, 5vw, 2.2rem);
+            box-shadow: 8px 8px 0px var(--neon-purple);
+            text-transform: uppercase;
         }
 
-        /* --- PALCO DO GIBI --- */
-        .comic-stage {
-            width: 90%; max-width: 600px;
+        .comic-viewport {
+            margin: 40px 0;
+            width: 85%; max-width: 450px;
             aspect-ratio: 800 / 1160;
             position: relative;
             perspective: 2000px;
-            margin-bottom: 150px;
+            animation: fadeInUp 1s ease-out 0.5s both;
         }
 
         .leaf {
             width: 100%; height: 100%;
             position: absolute; top: 0; left: 0;
-            background: #fff; border: 5px solid var(--outline);
+            background: #fff; border: 6px solid var(--outline);
             backface-visibility: hidden;
             transform-origin: left center;
-            transition: transform 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.1);
-            box-shadow: 8px 8px 15px rgba(0,0,0,0.2);
+            transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55), opacity 0.4s;
+            box-shadow: 15px 15px 35px rgba(0,0,0,0.7);
         }
 
         .leaf img { width: 100%; height: 100%; object-fit: cover; display: block; }
-        .flipped { transform: rotateY(-180deg); }
+        
+        .flipped { transform: rotateY(-180deg); opacity: 0; visibility: hidden; }
 
-        /* --- BOTÃO ASSISTIR VÍDEO (ESTILO CARTOON) --- */
-        .video-trigger {
-            margin-top: 20px;
-            font-family: 'Bangers', cursive;
-            background: var(--pop-pink);
-            color: #fff;
-            padding: 10px 20px;
-            border: 4px solid #000;
-            cursor: pointer;
-            box-shadow: 5px 5px 0px #000;
-            transition: 0.2s;
-            font-size: 1.2rem;
+        .nav-bar {
+            display: flex; align-items: center; gap: 20px;
+            margin-bottom: 60px; z-index: 100;
+            animation: fadeInUp 1s ease-out 0.8s both;
         }
 
-        .video-trigger:hover { transform: scale(1.1) rotate(2deg); background: #ff1f60; }
+        .btn-nav {
+            font-family: 'Bangers', cursive; font-size: 1.2rem;
+            padding: 12px 25px; border: 4px solid var(--outline);
+            background: #fff; color: var(--outline);
+            box-shadow: 5px 5px 0px var(--outline); cursor: pointer;
+            transition: 0.2s; letter-spacing: 1px;
+        }
 
-        /* --- TELA DE VÍDEO OCULTA (MODAL) --- */
+        .btn-sound {
+            width: 60px; height: 60px; border-radius: 50%;
+            border: 4px solid var(--outline); background: var(--pop-yellow);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; cursor: pointer;
+            box-shadow: 5px 5px 0px var(--outline); transition: 0.3s;
+        }
+
+        .btn-nav:hover { background: var(--neon-blue); transform: translateY(-3px); box-shadow: 7px 7px 0px var(--outline); }
+        .btn-sound:hover { transform: scale(1.1); box-shadow: 0 0 20px var(--pop-yellow); }
+        .btn-nav:active, .btn-sound:active { transform: scale(0.95); box-shadow: 0px 0px 0px #000; }
+
+        @keyframes bounceIn {
+            0% { opacity: 0; transform: scale(0.3); }
+            50% { opacity: 0.9; transform: scale(1.1); }
+            80% { transform: scale(0.9); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(100px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
         .video-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9);
-            display: none; /* Oculto por padrão */
-            justify-content: center; align-items: center;
-            z-index: 1000;
-            backdrop-filter: blur(5px);
+            background: rgba(0,0,0,0.92); display: none; z-index: 3000;
+            justify-content: center; align-items: center; backdrop-filter: blur(8px);
+        }
+        .video-box {
+            width: 85%; max-width: 380px; aspect-ratio: 9/16;
+            border: 6px solid var(--neon-blue); position: relative;
+            transform: scale(0.7); opacity: 0; transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 0 50px rgba(0, 242, 255, 0.3);
+        }
+        .video-box.active { transform: scale(1); opacity: 1; }
+
+        .close-btn {
+            position: absolute; top: -50px; right: 0;
+            background: var(--pop-yellow); border: 3px solid var(--outline);
+            font-family: 'Bangers'; padding: 6px 15px; cursor: pointer; font-size: 1rem;
         }
 
-        .video-container {
-            width: 90%; max-width: 500px; /* Mantém proporção 9:16 aproximada */
-            aspect-ratio: 9 / 16;
-            background: #000;
-            border: 6px solid var(--pop-cyan);
-            box-shadow: 0 0 30px var(--pop-cyan);
-            position: relative;
-            transform: scale(0); /* Começa pequeno para a animação */
-            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        .video-container.active { transform: scale(1); }
-
-        .video-container video { width: 100%; height: 100%; object-fit: cover; }
-
-        .close-video {
-            position: absolute; top: -50px; right: -10px;
-            background: var(--pop-yellow); border: 3px solid #000;
-            font-family: 'Bangers', cursive; padding: 5px 15px;
-            cursor: pointer; font-size: 1.2rem;
-        }
-
-        /* --- CONTROLES INFERIORES --- */
-        .controls { position: fixed; bottom: 20px; display: flex; gap: 15px; z-index: 100; }
-        
-        .btn-cartoon {
-            font-family: 'Bangers', cursive; font-size: 1.2rem;
-            padding: 10px 25px; cursor: pointer;
-            border: 4px solid var(--outline); background: #fff;
-            box-shadow: 5px 5px 0px var(--outline);
-            transition: 0.1s;
-        }
-
-        .btn-cartoon:active { transform: translate(3px, 3px); box-shadow: 0px 0px 0px #000; }
-        .btn-next { background: var(--pop-yellow); }
-        .btn-prev { background: var(--pop-cyan); color: #fff; }
-
-        .btn-audio {
-            background: #fff; border-radius: 50%; width: 50px; height: 50px;
-            display: flex; align-items: center; justify-content: center;
-            border: 4px solid var(--outline); cursor: pointer;
-            box-shadow: 4px 4px 0px var(--outline); font-size: 1.5rem;
-        }
     </style>
 </head>
-<body>
+<body onload="document.body.classList.add('loaded')">
 
-    <audio id="bgMusic" loop>
-        <source src="seu_audio.mp3" type="audio/mpeg">
-    </audio>
-
+    <div class="bg-fixed"></div>
     <div class="grid-overlay"></div>
+    <audio id="bgMusic" loop><source src="audio-gibi.mp3" type="audio/mpeg"></audio>
 
-    <div class="sticker-title">IA e Segurança Digital</div>
-
-    <button class="video-trigger" onclick="abrirVideo()">📺 CASO QUEIRA ASSISTIR AO VÍDEO</button>
-
-    <div class="comic-stage">
-        <div class="paper-stack">
-            <div class="leaf" id="p4" style="z-index: 1;"><img src="final-page-gibi.png"></div>
-            <div class="leaf" id="p3" style="z-index: 2;"><img src="page1-minigibi.jpeg"></div>
-            <div class="leaf" id="p2" style="z-index: 3;"><img src="intro-mini-gibi.png"></div>
-            <div class="leaf" id="p1" style="z-index: 4;"><img src="capa-mini-gibi.jpeg"></div>
-        </div>
+    <div class="video-badge">
+        <button class="btn-video" onclick="abrirVideo()">📺</button>
     </div>
 
-    <div class="video-overlay" id="videoOverlay">
-        <div class="video-container" id="videoContainer">
-            <button class="close-video" onclick="fecharVideo()">FECHAR [X]</button>
-            <video id="meuVideo" controls>
+    <header>
+        <div class="sticker-title">IA E PRIVACIDADE</div>
+    </header>
+
+    <div class="comic-viewport">
+        <div class="leaf" id="p4" style="z-index: 1;"><img src="final-page-gibi.png"></div>
+        <div class="leaf" id="p3" style="z-index: 2;"><img src="page1-minigibi.jpeg"></div>
+        <div class="leaf" id="p2" style="z-index: 3;"><img src="intro-mini-gibi.png"></div>
+        <div class="leaf" id="p1" style="z-index: 4;"><img src="capa-mini-gibi.jpeg"></div>
+    </div>
+
+    <div class="nav-bar">
+        <button class="btn-nav" onclick="voltar()">VOLTAR</button>
+        <button class="btn-sound" onclick="toggleMusic()" id="mBtn">🔇</button>
+        <button class="btn-nav" onclick="avancar()">PRÓXIMO</button>
+    </div>
+
+    <div class="video-overlay" id="vOverlay">
+        <div class="video-box" id="vBox">
+            <button class="close-btn" onclick="fecharVideo()">FECHAR [X]</button>
+            <video id="meuVideo" style="width:100%; height:100%; object-fit:cover;" controls>
                 <source src="Projeto.mp4" type="video/mp4">
             </video>
         </div>
     </div>
 
-    <div class="controls">
-        <button class="btn-cartoon btn-prev" onclick="voltar()">VOLTAR</button>
-        <button class="btn-audio" onclick="toggleMusic()" id="musicBtn">🔇</button>
-        <button class="btn-cartoon btn-next" onclick="avancar()">PRÓXIMO</button>
-    </div>
-
     <script>
         let currentPage = 1;
         const totalPages = 4;
-        const music = document.getElementById('bgMusic');
-        const musicBtn = document.getElementById('musicBtn');
-        const videoOverlay = document.getElementById('videoOverlay');
-        const videoContainer = document.getElementById('videoContainer');
-        const videoPlayer = document.getElementById('meuVideo');
 
-        // --- CONTROLE DE MÚSICA ---
-        function toggleMusic() {
-            if (music.paused) {
-                music.play();
-                musicBtn.innerText = "🔊";
-            } else {
-                music.pause();
-                musicBtn.innerText = "🔇";
-            }
-        }
-
-        // --- CONTROLE DO GIBI ---
         function avancar() {
             if (currentPage < totalPages) {
                 const leaf = document.getElementById(`p${currentPage}`);
                 leaf.classList.add('flipped');
-                setTimeout(() => { leaf.style.zIndex = 0; }, 400);
                 currentPage++;
             }
         }
@@ -210,27 +208,31 @@
             if (currentPage > 1) {
                 currentPage--;
                 const leaf = document.getElementById(`p${currentPage}`);
-                leaf.style.zIndex = (totalPages - currentPage + 10);
                 leaf.classList.remove('flipped');
             }
         }
 
-        // --- CONTROLE DO VÍDEO POP-UP ---
-        function abrirVideo() {
-            videoOverlay.style.display = 'flex';
-            setTimeout(() => {
-                videoContainer.classList.add('active');
-            }, 10);
-            // Pausa a música de fundo ao abrir o vídeo (opcional)
-            if (!music.paused) music.pause();
+        const music = document.getElementById('bgMusic');
+        function toggleMusic() {
+            if (music.paused) { 
+                music.play(); 
+                document.getElementById('mBtn').innerText = "🔊";
+                document.getElementById('mBtn').style.background = "var(--neon-blue)";
+            } else { 
+                music.pause(); 
+                document.getElementById('mBtn').innerText = "🔇";
+                document.getElementById('mBtn').style.background = "var(--pop-yellow)";
+            }
         }
 
-        function fecharVideo() {
-            videoContainer.classList.remove('active');
-            videoPlayer.pause(); // Para o vídeo ao fechar
-            setTimeout(() => {
-                videoOverlay.style.display = 'none';
-            }, 500);
+        function abrirVideo() { 
+            document.getElementById('vOverlay').style.display = 'flex'; 
+            setTimeout(() => document.getElementById('vBox').classList.add('active'), 50);
+        }
+        function fecharVideo() { 
+            document.getElementById('vBox').classList.remove('active');
+            document.getElementById('meuVideo').pause();
+            setTimeout(() => document.getElementById('vOverlay').style.display = 'none', 500);
         }
     </script>
 </body>
